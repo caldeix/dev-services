@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, Fragment } from "react"
 import { Check, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 import WhatsAppButton from "@/components/whatsapp-button"
@@ -15,6 +15,10 @@ interface ServicePackage {
   title: string
   price: number
   maintenancePrice: number
+  discount?: boolean
+  discount_percent?: number
+  discount_main?: boolean
+  discount_percent_main?: number
   features: Feature[]
   popular?: boolean
 }
@@ -22,14 +26,21 @@ interface ServicePackage {
 const packages: ServicePackage[] = [
   {
     id: "estatica",
-    title: "Web Estática",
-    price: 175,
-    maintenancePrice: 50,
+    title: "Básica",
+    price: 500,
+    maintenancePrice: 100,
+    discount: true,
+    discount_percent: 45,
+    discount_main: true,
+    discount_percent_main: 70,
+    popular: false,
     features: [
       { name: "Diseño Responsive", included: true },
-      { name: "Hasta 5 páginas", included: true },
-      { name: "SEO Básico", included: true },
-      { name: "Formulario de Contacto", included: true },
+      { name: "3 Páginas", included: true },
+      { name: "SSL y hosting", included: true },
+      { name: "Dominio", included: true },
+      { name: "SEO", included: false },
+      { name: "Formularios", included: false },
       { name: "Base de Datos", included: false },
       { name: "Panel de Administración", included: false },
       { name: "API Personalizada", included: false },
@@ -37,15 +48,21 @@ const packages: ServicePackage[] = [
   },
   {
     id: "base-datos",
-    title: "Con Base de Datos",
-    price: 350,
-    maintenancePrice: 75,
+    title: "Avanzada",
+    price: 1500,
+    maintenancePrice: 300,
+    discount: true,
+    discount_percent: 75,
+    discount_main: true,
+    discount_percent_main: 40,
     popular: true,
     features: [
       { name: "Diseño Responsive", included: true },
-      { name: "Hasta 8 páginas", included: true },
-      { name: "SEO Avanzado", included: true },
-      { name: "Formulario de Contacto", included: true },
+      { name: "8 Páginas", included: true },
+      { name: "SSL y hosting", included: true },
+      { name: "Dominio", included: true },
+      { name: "SEO", included: true },
+      { name: "Formularios", included: true },
       { name: "Base de Datos", included: true },
       { name: "Panel de Administración", included: false },
       { name: "API Personalizada", included: false },
@@ -53,14 +70,21 @@ const packages: ServicePackage[] = [
   },
   {
     id: "completa",
-    title: "Con BD y Panel Admin",
-    price: 750,
-    maintenancePrice: 150,
+    title: "Completa",
+    price: 3500,
+    discount: true,
+    discount_percent: 35,
+    maintenancePrice: 700,
+    discount_main: true,
+    discount_percent_main: 25,
+    popular: false,
     features: [
       { name: "Diseño Responsive", included: true },
       { name: "Páginas Ilimitadas", included: true },
-      { name: "SEO Avanzado", included: true },
-      { name: "Formularios Avanzados", included: true },
+      { name: "SSL y hosting", included: true },
+      { name: "Dominio", included: true },
+      { name: "SEO", included: true },
+      { name: "Formularios", included: true },
       { name: "Base de Datos", included: true },
       { name: "Panel de Administración", included: true },
       { name: "API Personalizada", included: true },
@@ -104,13 +128,18 @@ export default function ServicePackages() {
             )}
             onClick={() => setSelectedPackage(isSelected ? null : pkg.id)}
           >
-            {pkg.popular && (
-              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                <span className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-4 py-1 rounded-full text-sm font-medium shadow-lg">
+            <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-2">
+              {pkg.popular && (
+                <span className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-4 py-1 rounded-full text-sm font-medium shadow-lg whitespace-nowrap">
                   Más Popular
                 </span>
-              </div>
-            )}
+              )}
+              {pkg.discount && (
+                <span className="bg-gradient-to-r from-red-500 to-pink-600 text-white px-3 py-1 rounded-full text-xs font-medium shadow-md whitespace-nowrap">
+                  ¡Oferta Limitada!
+                </span>
+              )}
+            </div>
 
             <div
               className={cn(
@@ -122,14 +151,62 @@ export default function ServicePackages() {
                     : "bg-gradient-to-r from-gray-50 to-gray-100",
               )}
             >
-              <h3 className="text-2xl font-bold mb-2">{pkg.title}</h3>
-              <div className="flex items-baseline">
-                <span className="text-4xl font-bold">{totalPrice}€</span>
-                {hasMaintenance && (
-                  <span className="ml-2 text-sm opacity-80">
-                    ({pkg.price}€ + {pkg.maintenancePrice}€/año)
+              <div className="flex justify-between items-start">
+                <h3 className="text-2xl font-bold">{pkg.title}</h3>
+                {pkg.discount && (
+                  <span className="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                    -{pkg.discount_percent}%
                   </span>
                 )}
+              </div>
+              <div className="mt-2">
+                {pkg.discount && (
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className={cn("text-gray-500 line-through text-sm", isSelected ? "text-white" : "text-gray-600")}>
+                      {pkg.price}€
+                    </span>
+                    <span className="bg-green-100 text-green-800 text-xs font-medium px-2 py-0.5 rounded">
+                      Ahorra {Math.round(pkg.price * (pkg.discount_percent! / 100))}€
+                    </span>
+                  </div>
+                )}
+                <div className="space-y-1">
+                  <div className="flex items-baseline">
+                    <span className="text-4xl font-bold">
+                      {pkg.discount ? Math.round(pkg.price * (1 - pkg.discount_percent! / 100)) : pkg.price}€
+                    </span>
+                    {hasMaintenance && (
+                      <span className="ml-2 text-sm opacity-80 min-w-[80px]">
+                        {pkg.discount_main ? (
+                          <>
+                            <span className={cn("line-through text-xs ", isSelected ? "text-white" : "text-gray-500")}>
+                              +{pkg.maintenancePrice}€
+                            </span>
+                            <span className={cn("ml-1", isSelected ? "text-white" : "text-gray-600")}>
+                              +{Math.round(pkg.maintenancePrice * (1 - pkg.discount_percent_main! / 100))}€/año
+                            </span>
+                          </>
+                        ) : (
+                          `+ ${pkg.maintenancePrice}€/año`
+                        )}
+                      </span>
+                    )}
+                  </div>
+                  <div className="h-4">
+                    {hasMaintenance && (
+                      <div className={cn("text-xs text-gray-600", isSelected ? "text-white" : "text-gray-600")}>
+                        Total: {Math.round(
+                          (pkg.discount 
+                            ? pkg.price * (1 - pkg.discount_percent! / 100) 
+                            : pkg.price) +
+                          (pkg.discount_main 
+                            ? pkg.maintenancePrice * (1 - pkg.discount_percent_main! / 100)
+                            : pkg.maintenancePrice)
+                        )}€ el primer año
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -146,7 +223,7 @@ export default function ServicePackages() {
                         <X className="h-4 w-4 text-red-600" />
                       </div>
                     )}
-                    <span className={cn("text-sm", feature.included ? "text-gray-800" : "text-gray-500")}>
+                    <span className={cn("text-sm", isSelected ? (feature.included ? "text-gray-800" : "text-gray-500") : (feature.included ? "text-gray-800" : "text-gray-500"))}>
                       {feature.name}
                     </span>
                   </li>
@@ -154,21 +231,37 @@ export default function ServicePackages() {
               </ul>
 
               {/* Mantenimiento Toggle */}
-              <div className="mb-6 p-4 bg-gray-50 rounded-xl border border-gray-200">
-                <div className="flex items-center justify-between">
+              <div className={cn("mb-6 p-4 rounded-xl border", isSelected ? "bg-blue-50 border-blue-100" : "bg-gray-50 border-gray-200")}>
+                <div className="flex items-center justify-between mb-3">
                   <div>
-                    <p className="font-medium text-gray-800">Mantenimiento Anual</p>
-                    <p className="text-sm text-gray-600">Hosting + Dominio + Soporte</p>
+                    <p className={cn("font-medium", isSelected ? "text-blue-800" : "text-gray-800")}>Mantenimiento Anual</p>
+                    <p className={cn("text-sm", isSelected ? "text-gray-600" : "text-gray-600")}>Hosting + Dominio + SSL + Soporte</p>
                   </div>
-                  <div className="flex items-center">
-                    <span className="text-lg font-bold text-gray-800 mr-3">{pkg.maintenancePrice}€/año</span>
+                  <div className="flex items-center gap-3">
+                    <div className="text-right">
+                      {pkg.discount_main && (
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-gray-500 line-through text-sm">
+                            {pkg.maintenancePrice}€
+                          </span>
+                          <span className="bg-green-100 text-green-800 text-xs font-medium px-2 py-0.5 rounded">
+                            -{pkg.discount_percent_main}%
+                          </span>
+                        </div>
+                      )}
+                      <div className={cn("text-lg font-bold", isSelected ? "text-blue-800" : "text-gray-800")}>
+                        {pkg.discount_main 
+                          ? Math.round(pkg.maintenancePrice * (1 - pkg.discount_percent_main! / 100))
+                          : pkg.maintenancePrice}€/año
+                      </div>
+                    </div>
                     <button
                       onClick={(e) => {
                         e.stopPropagation()
                         toggleMaintenance(pkg.id)
                       }}
                       className={cn(
-                        "relative w-12 h-6 rounded-full transition-colors",
+                        "relative w-12 h-6 rounded-full transition-colors flex-shrink-0",
                         hasMaintenance ? "bg-blue-500" : "bg-gray-300",
                       )}
                     >
@@ -181,6 +274,11 @@ export default function ServicePackages() {
                     </button>
                   </div>
                 </div>
+                {pkg.discount_main && (
+                  <div className={cn("text-xs font-medium mt-1", isSelected ? "text-gray-600" : "text-gray-600")}>
+                    ¡Ahorras {Math.round(pkg.maintenancePrice * (pkg.discount_percent_main! / 100))}€ al año!
+                  </div>
+                )}
               </div>
 
               <WhatsAppButton
@@ -198,7 +296,9 @@ export default function ServicePackages() {
               />
 
               {!isSelected && (
-                <p className="text-center text-sm text-gray-500 mt-3">Haz clic para seleccionar este paquete</p>
+                <p className={cn("text-center text-sm mt-3", isSelected ? "text-blue-100" : "text-gray-500")}>
+                  Haz clic para seleccionar este paquete
+                </p>
               )}
             </div>
           </div>

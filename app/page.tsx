@@ -71,7 +71,20 @@ export default function Home() {
       <footer className="bg-gradient-to-r from-gray-800 to-gray-900 text-white py-12">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-gray-300">&copy; {new Date().getFullYear()} Servicios de Desarrollo Web</p>
+            <div className="flex flex-col items-center md:items-start">
+              <p className="text-gray-300">&copy; {new Date().getFullYear()} Servicios de Desarrollo Web</p>
+              <p className="text-gray-400 text-sm mt-1">
+                Creado con ❤️ por{" "}
+                <a 
+                  href="https://caldeix.github.io/me/" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="hover:text-white transition-colors"
+                >
+                  bycaldeix
+                </a>
+              </p>
+            </div>
             <div className="flex space-x-6 mt-4 md:mt-0">
               <PrivacyModal />
               <CookieModal />

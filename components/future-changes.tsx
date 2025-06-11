@@ -1,10 +1,23 @@
-import { ArrowRight, Zap, Settings, Rocket } from "lucide-react"
+import { ArrowRight, Zap, Settings, Rocket, ShieldCheck } from "lucide-react"
 
 export default function FutureChanges() {
-  const changes = [
+  const changes: Array<{
+    title: string
+    price: number
+    discount: boolean
+    discount_percent: number
+    icon: any
+    description: string
+    examples: string[]
+    color: string
+    bgColor: string
+    borderColor: string
+  }> = [
     {
       title: "Cambios Pequeños",
-      price: "25€",
+      price: 50,
+      discount: false,
+      discount_percent: 20, // 20% discount
       icon: Zap,
       description: "Modificaciones menores que no afectan a la estructura",
       examples: [
@@ -15,11 +28,13 @@ export default function FutureChanges() {
       ],
       color: "from-green-500 to-emerald-600",
       bgColor: "bg-green-50",
-      borderColor: "border-green-200",
+      borderColor: "border-green-200"
     },
     {
       title: "Modificaciones Medias",
-      price: "50€",
+      price: 125,
+      discount: false,
+      discount_percent: 30,
       icon: Settings,
       description: "Cambios que requieren más tiempo pero no alteran la estructura principal",
       examples: [
@@ -30,11 +45,13 @@ export default function FutureChanges() {
       ],
       color: "from-blue-500 to-indigo-600",
       bgColor: "bg-blue-50",
-      borderColor: "border-blue-200",
+      borderColor: "border-blue-200"
     },
     {
       title: "Evoluciones Grandes",
-      price: "150€-350€",
+      price: 550, // Using the higher value for calculation
+      discount: false,
+      discount_percent: 43, // 15% discount
       icon: Rocket,
       description: "Cambios significativos que requieren replanteamiento o nuevas funcionalidades",
       examples: [
@@ -45,7 +62,7 @@ export default function FutureChanges() {
       ],
       color: "from-purple-500 to-pink-600",
       bgColor: "bg-purple-50",
-      borderColor: "border-purple-200",
+      borderColor: "border-purple-200"
     },
   ]
 
@@ -56,8 +73,15 @@ export default function FutureChanges() {
         return (
           <div
             key={index}
-            className={`bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border ${change.borderColor} p-8 hover:shadow-2xl transition-all duration-300 group hover:scale-105`}
+            className={`relative bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border ${change.borderColor} p-8 hover:shadow-2xl transition-all duration-300 group hover:scale-105 ${
+              change.discount ? 'ring-2 ring-offset-4 ring-red-400' : ''
+            }`}
           >
+            {change.discount && (
+              <div className="absolute -top-3 -right-3 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full z-10">
+                ¡Oferta!
+              </div>
+            )}
             <div
               className={`w-16 h-16 rounded-2xl bg-gradient-to-r ${change.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}
             >
@@ -65,8 +89,23 @@ export default function FutureChanges() {
             </div>
 
             <h3 className="text-2xl font-bold text-gray-800 mb-2">{change.title}</h3>
-            <div className={`text-3xl font-bold bg-gradient-to-r ${change.color} bg-clip-text text-transparent mb-4`}>
-              {change.price}
+            <div className="mb-4">
+              {change.discount && (
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                    -{change.discount_percent}%
+                  </span>
+                  <span className="text-gray-500 line-through text-lg">
+                    {change.price}€ 
+                  </span>
+                </div>
+              )}
+              <div className={`text-3xl font-bold bg-gradient-to-r ${change.color} bg-clip-text text-transparent`}>
+                {change.discount 
+                  ? `${Math.round(change.price * (1 - change.discount_percent / 100))}€` 
+                  : `${change.price}€`}
+                {change.title === "Evoluciones Grandes" && !change.discount}
+              </div>
             </div>
             <p className="text-gray-600 mb-6 leading-relaxed">{change.description}</p>
 

@@ -57,7 +57,7 @@ export default function CookieModal() {
                 </p>
               </div>
 
-              <p className="text-sm text-gray-500 bg-gray-50 p-3 rounded-lg">Última actualización: 25/08/2024</p>
+              <p className="text-sm text-gray-500 bg-gray-50 p-3 rounded-lg">Última actualización: 11/06/2025</p>
             </div>
 
             <div className="border-t border-gray-100 p-6 bg-gray-50">
