@@ -1,18 +1,20 @@
 /** @type {import('next').NextConfig} */
+const isProd = process.env.NODE_ENV === 'production'
 const nextConfig = {
   output: 'export',
+  distDir: 'out',
   trailingSlash: true,
-  assetPrefix: '/dev-services/',
-  basePath: '/dev-services',
+  basePath: isProd ? '/dev-services' : '',
+  assetPrefix: isProd ? '/dev-services/' : '',
+  images: {
+    unoptimized: true,
+  },
   eslint: {
     ignoreDuringBuilds: true,
   },
   typescript: {
     ignoreBuildErrors: true,
-  },
-  images: {
-    unoptimized: true,
-  },
+  }
 }
 
 export default nextConfig
