@@ -49,7 +49,7 @@ export default function FutureChanges() {
     },
     {
       title: "Evoluciones Grandes",
-      price: 550, // Using the higher value for calculation
+      price: 350, // Using the higher value for calculation
       discount: false,
       discount_percent: 43, // 15% discount
       icon: Rocket,

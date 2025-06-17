@@ -52,9 +52,18 @@ export default function Home() {
             <div className="text-center">
               <div className="flex items-center justify-center mb-6">
                 <Phone className="h-6 w-6 mr-3 text-gray-600" />
-                <span className="text-lg font-medium">+34 682704197</span>
+                <span className="text-lg font-medium"><Link href="tel:+34682704197">+34 682704197</Link></span>
               </div>
 
+              <Link
+                href="mailto:caldeix@protonmail.com"
+                target="_blank"
+                className="inline-flex items-center text-gray-700 hover:text-gray-900 transition-colors mb-6 group"
+              >
+                <ExternalLink className="h-5 w-5 mr-2 group-hover:translate-x-1 transition-transform" />
+                caldeix@protonmail.com
+              </Link>
+              <br></br>
               <Link
                 href="https://caldeix.github.io/me/"
                 target="_blank"

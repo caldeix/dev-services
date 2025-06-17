@@ -13,7 +13,7 @@ interface Feature {
 interface ServicePackage {
   id: string
   title: string
-  price: number
+  price: any
   maintenancePrice: number
   discount?: boolean
   discount_percent?: number
@@ -27,13 +27,13 @@ const packages: ServicePackage[] = [
   {
     id: "estatica",
     title: "Básica",
-    price: 500,
-    maintenancePrice: 100,
+    price: 675,
+    maintenancePrice: 35,
     discount: true,
-    discount_percent: 45,
+    discount_percent: 60,
     discount_main: true,
-    discount_percent_main: 70,
-    popular: false,
+    discount_percent_main: 100,
+    popular: true,
     features: [
       { name: "Diseño Responsive", included: true },
       { name: "3 Páginas", included: true },
@@ -49,13 +49,13 @@ const packages: ServicePackage[] = [
   {
     id: "base-datos",
     title: "Avanzada",
-    price: 1500,
-    maintenancePrice: 300,
+    price: 1850,
+    maintenancePrice: 90,
     discount: true,
-    discount_percent: 75,
+    discount_percent: 50,
     discount_main: true,
-    discount_percent_main: 40,
-    popular: true,
+    discount_percent_main: 50,
+    popular: false,
     features: [
       { name: "Diseño Responsive", included: true },
       { name: "8 Páginas", included: true },
@@ -69,14 +69,14 @@ const packages: ServicePackage[] = [
     ],
   },
   {
-    id: "completa",
-    title: "Completa",
-    price: 3500,
-    discount: true,
-    discount_percent: 35,
-    maintenancePrice: 700,
-    discount_main: true,
-    discount_percent_main: 25,
+    id: "personalizada",
+    title: "Personalizada",
+    price: "A consultar",
+    discount: false,
+    discount_percent: 0,
+    maintenancePrice: 180,
+    discount_main: false,
+    discount_percent_main: 0,
     popular: false,
     features: [
       { name: "Diseño Responsive", included: true },
@@ -104,7 +104,7 @@ export default function ServicePackages() {
   }
 
   const getWhatsAppMessage = (pkg: ServicePackage) => {
-    const maintenanceText = maintenanceSelections[pkg.id] ? ` + mantenimiento anual (${pkg.maintenancePrice}€/año)` : ""
+    const maintenanceText = maintenanceSelections[pkg.id] ? ` + mantenimiento mensual (${pkg.maintenancePrice}€/mes)` : ""
 
     return `Estoy interesado en el paquete ${pkg.title}${maintenanceText}`
   }
@@ -130,7 +130,7 @@ export default function ServicePackages() {
           >
             <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-2">
               {pkg.popular && (
-                <span className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-4 py-1 rounded-full text-sm font-medium shadow-lg whitespace-nowrap">
+                <span className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-4 py-1 rounded-full text-sm font-medium shadow-lg whitespace-nowrap [text-shadow:0_1px_2px_rgba(0,0,0,0.3)]">
                   Más Popular
                 </span>
               )}
@@ -162,8 +162,8 @@ export default function ServicePackages() {
               <div className="mt-2">
                 {pkg.discount && (
                   <div className="flex items-center gap-2 mb-1">
-                    <span className={cn("text-gray-500 line-through text-sm", isSelected ? "text-white" : "text-gray-600")}>
-                      {pkg.price}€
+                    <span className={cn("text-gray-500 line-through text-sm", isSelected ? "text-white" : pkg.popular ? "text-white" : "text-gray-600")}>
+                      {isNaN(pkg.price) ? pkg.price : Math.round(pkg.price) + "€"}
                     </span>
                     <span className="bg-green-100 text-green-800 text-xs font-medium px-2 py-0.5 rounded">
                       Ahorra {Math.round(pkg.price * (pkg.discount_percent! / 100))}€
@@ -173,36 +173,36 @@ export default function ServicePackages() {
                 <div className="space-y-1">
                   <div className="flex items-baseline">
                     <span className="text-4xl font-bold">
-                      {pkg.discount ? Math.round(pkg.price * (1 - pkg.discount_percent! / 100)) : pkg.price}€
+                      {pkg.discount ? Math.round(pkg.price * (1 - pkg.discount_percent! / 100)) + "€" : isNaN(pkg.price) ? pkg.price : Math.round(pkg.price) + "€"}
                     </span>
                     {hasMaintenance && (
                       <span className="ml-2 text-sm opacity-80 min-w-[80px]">
                         {pkg.discount_main ? (
                           <>
-                            <span className={cn("line-through text-xs ", isSelected ? "text-white" : "text-gray-500")}>
+                            <span className={cn("line-through text-xs ", isSelected ? "text-white" : pkg.popular ? "text-white" : "text-gray-500")}>
                               +{pkg.maintenancePrice}€
                             </span>
-                            <span className={cn("ml-1", isSelected ? "text-white" : "text-gray-600")}>
-                              +{Math.round(pkg.maintenancePrice * (1 - pkg.discount_percent_main! / 100))}€/año
+                            <span className={cn("ml-1", isSelected ? "text-white" : pkg.popular ? "text-white" : "text-gray-600")}>
+                              +{Math.round(pkg.maintenancePrice * (1 - pkg.discount_percent_main! / 100))}€/ mantenimiento 1º mes
                             </span>
                           </>
                         ) : (
-                          `+ ${pkg.maintenancePrice}€/año`
+                          `+ ${pkg.maintenancePrice}€/mensual`
                         )}
                       </span>
                     )}
                   </div>
                   <div className="h-4">
                     {hasMaintenance && (
-                      <div className={cn("text-xs text-gray-600", isSelected ? "text-white" : "text-gray-600")}>
-                        Total: {Math.round(
+                      <div className={cn("text-xs text-gray-600", isSelected ? "text-white" : pkg.popular ? "text-white" : "text-gray-600")}>
+                        Total: {isNaN(pkg.price) ? pkg.price : Math.round(
                           (pkg.discount 
                             ? pkg.price * (1 - pkg.discount_percent! / 100) 
                             : pkg.price) +
                           (pkg.discount_main 
                             ? pkg.maintenancePrice * (1 - pkg.discount_percent_main! / 100)
                             : pkg.maintenancePrice)
-                        )}€ el primer año
+                        ) + "€ el primer mes"} <br></br>Después {pkg.maintenancePrice}€/mensual
                       </div>
                     )}
                   </div>
@@ -234,7 +234,7 @@ export default function ServicePackages() {
               <div className={cn("mb-6 p-4 rounded-xl border", isSelected ? "bg-blue-50 border-blue-100" : "bg-gray-50 border-gray-200")}>
                 <div className="flex items-center justify-between mb-3">
                   <div>
-                    <p className={cn("font-medium", isSelected ? "text-blue-800" : "text-gray-800")}>Mantenimiento Anual</p>
+                    <p className={cn("font-medium", isSelected ? "text-blue-800" : "text-gray-800")}>Mantenimiento Mensual</p>
                     <p className={cn("text-sm", isSelected ? "text-gray-600" : "text-gray-600")}>Hosting + Dominio + SSL + Soporte</p>
                   </div>
                   <div className="flex items-center gap-3">
@@ -252,7 +252,7 @@ export default function ServicePackages() {
                       <div className={cn("text-lg font-bold", isSelected ? "text-blue-800" : "text-gray-800")}>
                         {pkg.discount_main 
                           ? Math.round(pkg.maintenancePrice * (1 - pkg.discount_percent_main! / 100))
-                          : pkg.maintenancePrice}€/año
+                          : pkg.maintenancePrice}€/mes
                       </div>
                     </div>
                     <button
